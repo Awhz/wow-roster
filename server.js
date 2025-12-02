@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const db = require('./database');
 const path = require('path');
 
+// Fix for BigInt serialization (caused by @libsql/client)
+BigInt.prototype.toJSON = function () { return this.toString() };
+
 const app = express();
 const PORT = 3000;
 
@@ -10,51 +13,51 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API to submit roster entry
-app.post('/api/roster', (req, res) => {
+app.post('/api/roster', async (req, res) => {
     const { name, characterClass, spec, role, playstyle } = req.body;
-    const stmt = db.prepare("INSERT INTO roster (name, characterClass, spec, role, playstyle) VALUES (?, ?, ?, ?, ?)");
-    stmt.run(name, characterClass, spec, role, playstyle, function (err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json({ id: this.lastID, message: "Entry added successfully" });
-    });
-    stmt.finalize();
+    try {
+        const result = await db.execute({
+            sql: "INSERT INTO roster (name, characterClass, spec, role, playstyle) VALUES (?, ?, ?, ?, ?)",
+            args: [name, characterClass, spec, role, playstyle]
+        });
+        res.json({ id: result.lastInsertRowid, message: "Entry added successfully" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // API to get all roster entries (for admin)
-app.get('/api/roster', (req, res) => {
-    db.all("SELECT * FROM roster", [], (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json(rows);
-    });
+app.get('/api/roster', async (req, res) => {
+    try {
+        const result = await db.execute("SELECT * FROM roster");
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // API to reset roster (Admin only)
-app.delete('/api/roster', (req, res) => {
-    db.run("DELETE FROM roster", [], function (err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json({ message: "Roster reset successfully", changes: this.changes });
-    });
+app.delete('/api/roster', async (req, res) => {
+    try {
+        const result = await db.execute("DELETE FROM roster");
+        res.json({ message: "Roster reset successfully", changes: result.rowsAffected });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // API to delete specific roster entry
-app.delete('/api/roster/:id', (req, res) => {
+app.delete('/api/roster/:id', async (req, res) => {
     const { id } = req.params;
-    db.run("DELETE FROM roster WHERE id = ?", [id], function (err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json({ message: "Entry deleted successfully", changes: this.changes });
-    });
+    try {
+        const result = await db.execute({
+            sql: "DELETE FROM roster WHERE id = ?",
+            args: [id]
+        });
+        res.json({ message: "Entry deleted successfully", changes: result.rowsAffected });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.listen(PORT, () => {
