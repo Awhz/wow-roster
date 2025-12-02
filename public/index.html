@@ -16,7 +16,7 @@
     <div class="container">
         <header style="position: relative;">
             <button id="adminBtn"
-                style="position: absolute; top: 0; right: 0; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #aaa; padding: 5px 10px; cursor: pointer; font-size: 0.8rem;">Admin</button>
+                style="position: absolute; top: 0; right: 0; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #aaa; padding: 5px 10px; cursor: pointer; font-size: 0.8rem;">Résultats</button>
             <h1>No Stress</h1>
             <p>Choisissez votre rôle.</p>
         </header>
@@ -93,12 +93,7 @@
     <script src="script.js"></script>
     <script>
         document.getElementById('adminBtn').addEventListener('click', () => {
-            const password = prompt("Mot de passe Admin :");
-            if (password === "Azeroth2024") {
-                window.location.href = "admin-secret.html";
-            } else if (password !== null) {
-                alert("Accès refusé.");
-            }
+            window.location.href = "admin-secret.html";
         });
     </script>
 </body>
