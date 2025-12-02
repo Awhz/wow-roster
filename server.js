@@ -14,11 +14,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // API to submit roster entry
 app.post('/api/roster', async (req, res) => {
-    const { name, characterClass, spec, role, playstyle } = req.body;
+    const { name, characterClass, spec, role, playstyle, comment } = req.body;
     try {
         const result = await db.execute({
-            sql: "INSERT INTO roster (name, characterClass, spec, role, playstyle) VALUES (?, ?, ?, ?, ?)",
-            args: [name, characterClass, spec, role, playstyle]
+            sql: "INSERT INTO roster (name, characterClass, spec, role, playstyle, comment) VALUES (?, ?, ?, ?, ?, ?)",
+            args: [name, characterClass, spec, role, playstyle, comment]
         });
         res.json({ id: result.lastInsertRowid, message: "Entry added successfully" });
     } catch (err) {

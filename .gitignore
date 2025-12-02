@@ -1,3 +1,4 @@
 node_modules
 roster.db
 .env
+.env.local

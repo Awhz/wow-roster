@@ -20,9 +20,22 @@ const db = createClient({
         spec TEXT,
         role TEXT,
         playstyle TEXT,
+        comment TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    // Migration: Add comment column if it doesn't exist (for existing DBs)
+    try {
+      await db.execute("ALTER TABLE roster ADD COLUMN comment TEXT");
+      console.log("Migration: Added 'comment' column to roster table.");
+    } catch (err) {
+      // Ignore error if column already exists
+      if (!err.message.includes("duplicate column name")) {
+        // console.log("Column 'comment' already exists or other error:", err.message);
+      }
+    }
+
     console.log("Database initialized connected to:", url);
   } catch (err) {
     console.error("Error initializing database:", err);
