@@ -18,21 +18,32 @@ const db = createClient({
         name TEXT,
         characterClass TEXT,
         spec TEXT,
+        secondarySpec TEXT,
         role TEXT,
         playstyle TEXT,
         comment TEXT,
+        rerolls TEXT,
+        isAccepted INTEGER DEFAULT 0,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
-    // Migration: Add comment column if it doesn't exist (for existing DBs)
-    try {
-      await db.execute("ALTER TABLE roster ADD COLUMN comment TEXT");
-      console.log("Migration: Added 'comment' column to roster table.");
-    } catch (err) {
-      // Ignore error if column already exists
-      if (!err.message.includes("duplicate column name")) {
-        // console.log("Column 'comment' already exists or other error:", err.message);
+    // Migration: Add columns if they don't exist
+    const columnsToAdd = [
+      { name: 'comment', type: 'TEXT' },
+      { name: 'secondarySpec', type: 'TEXT' },
+      { name: 'rerolls', type: 'TEXT' },
+      { name: 'isAccepted', type: 'INTEGER DEFAULT 0' }
+    ];
+
+    for (const col of columnsToAdd) {
+      try {
+        await db.execute(`ALTER TABLE roster ADD COLUMN ${col.name} ${col.type}`);
+        console.log(`Migration: Added '${col.name}' column to roster table.`);
+      } catch (err) {
+        if (!err.message.includes("duplicate column name")) {
+          // console.log(`Column '${col.name}' already exists or other error:`, err.message);
+        }
       }
     }
 
