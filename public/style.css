@@ -1,0 +1,262 @@
+:root {
+    --primary-color: #f8b700;
+    /* WoW Gold */
+    --secondary-color: #1a1a1a;
+    --accent-color: #0070dd;
+    /* Rare Blue */
+    --bg-dark: #0a0a0a;
+    --text-light: #e0e0e0;
+    --glass-bg: rgba(20, 20, 20, 0.85);
+    --border-color: #333;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('https://bnetcmsus-a.akamaihd.net/cms/blog_header/2g/2G4VNH5J5Z5H1565116776184.jpg');
+    /* Generic WoW background */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 0;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 500px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+p {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    font-family: 'Cinzel', serif;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-light);
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(248, 183, 0, 0.3);
+}
+
+/* Radio Cards for Playstyle */
+.radio-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.radio-card {
+    flex: 1;
+    position: relative;
+    cursor: pointer;
+}
+
+.radio-card input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.card-content {
+    display: block;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.3s;
+    height: 100%;
+}
+
+.radio-card input:checked+.card-content {
+    border-color: var(--primary-color);
+    background: rgba(248, 183, 0, 0.1);
+    box-shadow: 0 0 10px rgba(248, 183, 0, 0.2);
+}
+
+.card-title {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+    color: #fff;
+}
+
+.card-desc {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(to bottom, #f8b700, #b8860b);
+    border: none;
+    border-radius: 6px;
+    color: #000;
+    font-weight: bold;
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+    margin-top: 1rem;
+}
+
+.submit-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Dark Dropdown Options */
+select option {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+}
+
+/* Success Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s;
+}
+
+.modal-content {
+    background: var(--glass-bg);
+    border: 1px solid var(--primary-color);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(248, 183, 0, 0.3);
+}
+
+.modal h2 {
+    color: var(--primary-color);
+    font-family: 'Cinzel', serif;
+    margin-bottom: 1rem;
+}
+
+.modal p {
+    color: #ddd;
+    margin-bottom: 1.5rem;
+}
+
+.close-btn {
+    background: var(--primary-color);
+    border: none;
+    padding: 10px 20px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+}
+
+.close-btn:hover {
+    filter: brightness(1.1);
+}

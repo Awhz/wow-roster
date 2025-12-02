@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NS Roster</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-overlay"></div>
+    <div class="container">
+        <header style="position: relative;">
+            <button id="adminBtn"
+                style="position: absolute; top: 0; right: 0; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #aaa; padding: 5px 10px; cursor: pointer; font-size: 0.8rem;">Admin</button>
+            <h1>No Stress</h1>
+            <p>Choisissez votre rôle.</p>
+        </header>
+
+        <form id="rosterForm">
+            <div class="form-group">
+                <label for="name">Nom du Personnage</label>
+                <input type="text" id="name" name="name" required placeholder="Entrez votre pseudo">
+            </div>
+
+            <div class="form-group">
+                <label for="characterClass">Classe</label>
+                <select id="characterClass" name="characterClass" required>
+                    <option value="" disabled selected>Sélectionner une Classe</option>
+                    <!-- Populated by JS -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="spec">Spécialisation</label>
+                <select id="spec" name="spec" required disabled>
+                    <option value="" disabled selected>Sélectionner une Spé</option>
+                    <!-- Populated by JS -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Rôle</label>
+                <select id="role" name="role" required disabled>
+                    <option value="" disabled selected>Sélectionner un Rôle</option>
+                    <!-- Populated by JS based on Class -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Style de Jeu</label>
+                <div class="radio-group">
+                    <label class="radio-card">
+                        <input type="radio" name="playstyle" value="Progress" required>
+                        <span class="card-content">
+                            <span class="card-title">Progress</span>
+                            <span class="card-desc">Raid Mythique</span>
+                        </span>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="playstyle" value="Social" required>
+                        <span class="card-content">
+                            <span class="card-title">Social / Détente</span>
+                            <span class="card-desc">Jouer pour le fun entre amis.</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Rejoindre No Stress</button>
+        </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <h2>Bienvenue !</h2>
+            <p>Votre inscription a été validée avec succès.</p>
+            <button class="close-btn" onclick="closeModal()">Fermer</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('adminBtn').addEventListener('click', () => {
+            const password = prompt("Mot de passe Admin :");
+            if (password === "Azeroth2024") {
+                window.location.href = "admin-secret.html";
+            } else if (password !== null) {
+                alert("Accès refusé.");
+            }
+        });
+    </script>
+</body>
+
+</html>
