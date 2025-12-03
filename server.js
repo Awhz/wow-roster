@@ -14,11 +14,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // API to submit roster entry
 app.post('/api/roster', async (req, res) => {
-    const { name, characterClass, spec, secondarySpec, role, playstyle, comment, rerolls } = req.body;
+    const { name, characterClass, primaryRole, secondaryRole, playstyle, comment, rerolls } = req.body;
     try {
         const result = await db.execute({
-            sql: "INSERT INTO roster (name, characterClass, spec, secondarySpec, role, playstyle, comment, rerolls) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            args: [name, characterClass, spec, secondarySpec, role, playstyle, comment, JSON.stringify(rerolls)]
+            sql: "INSERT INTO roster (name, characterClass, primaryRole, secondaryRole, playstyle, comment, rerolls) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            args: [name, characterClass, primaryRole, secondaryRole, playstyle, comment, JSON.stringify(rerolls)]
         });
         res.json({ id: result.lastInsertRowid, message: "Entry added successfully" });
     } catch (err) {
@@ -39,7 +39,7 @@ app.get('/api/roster', async (req, res) => {
 // API to update roster entry (Admin)
 app.put('/api/roster/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, characterClass, spec, secondarySpec, role, playstyle, comment, rerolls, isAccepted } = req.body;
+    const { name, characterClass, spec, secondarySpec, primaryRole, secondaryRole, role, playstyle, comment, rerolls, isAccepted } = req.body;
 
     try {
         // Dynamic update query construction could be better, but for now simple fixed query
@@ -57,6 +57,8 @@ app.put('/api/roster/:id', async (req, res) => {
         if (characterClass !== undefined) { updates.push("characterClass = ?"); args.push(characterClass); }
         if (spec !== undefined) { updates.push("spec = ?"); args.push(spec); }
         if (secondarySpec !== undefined) { updates.push("secondarySpec = ?"); args.push(secondarySpec); }
+        if (primaryRole !== undefined) { updates.push("primaryRole = ?"); args.push(primaryRole); }
+        if (secondaryRole !== undefined) { updates.push("secondaryRole = ?"); args.push(secondaryRole); }
         if (role !== undefined) { updates.push("role = ?"); args.push(role); }
         if (playstyle !== undefined) { updates.push("playstyle = ?"); args.push(playstyle); }
         if (comment !== undefined) { updates.push("comment = ?"); args.push(comment); }
@@ -98,6 +100,25 @@ app.delete('/api/roster/:id', async (req, res) => {
         res.json({ message: "Entry deleted successfully", changes: result.rowsAffected });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// API for admin login
+app.post('/api/admin/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const result = await db.execute({
+            sql: 'SELECT * FROM admin_users WHERE username = ? AND password = ?',
+            args: [username, password]
+        });
+
+        if (result.rows.length > 0) {
+            res.json({ success: true, message: 'Login successful' });
+        } else {
+            res.json({ success: false, message: 'Invalid credentials' });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 

@@ -36,25 +36,17 @@
             </div>
 
             <div class="form-group">
-                <label for="spec">Spécialisation</label>
-                <select id="spec" name="spec" required disabled>
-                    <option value="" disabled selected>Sélectionner une Spé</option>
-                    <!-- Populated by JS -->
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="secondarySpec">Spécialisation Secondaire (Optionnel)</label>
-                <select id="secondarySpec" name="secondarySpec" disabled>
-                    <option value="" disabled selected>Sélectionner une Spé Sec.</option>
-                    <!-- Populated by JS -->
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="role">Rôle</label>
-                <select id="role" name="role" required disabled>
+                <label for="primaryRole">Rôle Principal</label>
+                <select id="primaryRole" name="primaryRole" required disabled>
                     <option value="" disabled selected>Sélectionner un Rôle</option>
+                    <!-- Populated by JS based on Class -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="secondaryRole">Rôle Secondaire (Optionnel)</label>
+                <select id="secondaryRole" name="secondaryRole" disabled>
+                    <option value="" disabled selected>Sélectionner un Rôle Sec.</option>
                     <!-- Populated by JS based on Class -->
                 </select>
             </div>
@@ -85,16 +77,16 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="choice2_spec">Spécialisation</label>
-                        <select id="choice2_spec" name="choice2_spec" disabled>
-                            <option value="" disabled selected>Spé</option>
+                        <label for="choice2_primaryRole">Rôle Principal</label>
+                        <select id="choice2_primaryRole" name="choice2_primaryRole" disabled>
+                            <option value="" disabled selected>Rôle</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="choice2_role">Rôle</label>
-                        <select id="choice2_role" name="choice2_role" disabled>
-                            <option value="" disabled selected>Rôle</option>
+                        <label for="choice2_secondaryRole">Rôle Secondaire</label>
+                        <select id="choice2_secondaryRole" name="choice2_secondaryRole" disabled>
+                            <option value="" disabled selected>Rôle Sec.</option>
                         </select>
                     </div>
                 </div>
@@ -138,7 +130,7 @@
             <img src="gnome_party.jpg" alt="Gnome Party" class="modal-image">
             <h2>Yeah !</h2>
             <p>Votre demande a été validée avec succès.</p>
-            <button class="close-btn" onclick="closeModal()">Fermer</button>
+            <button class="close-btn" onclick="closeModal()">Voir les résultats</button>
         </div>
     </div>
 

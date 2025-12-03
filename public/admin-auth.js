@@ -1,0 +1,118 @@
+// Authentication functions for admin panel
+function checkAuthStatus() {
+    return localStorage.getItem('adminAuthenticated') === 'true';
+}
+
+function updateUIBasedOnAuth() {
+    const isAuthenticated = checkAuthStatus();
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Show/hide login/logout buttons
+    if (isAuthenticated) {
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+    } else {
+        loginBtn.style.display = 'block';
+        logoutBtn.style.display = 'none';
+    }
+
+    // Show/hide admin action buttons
+    const deleteButtons = document.querySelectorAll('.action-btn.delete');
+    const exportButtons = document.querySelectorAll('button[onclick^="export"]');
+    const resetBtn = document.getElementById('resetBtn');
+
+    deleteButtons.forEach(btn => {
+        btn.style.display = isAuthenticated ? 'inline' : 'none';
+    });
+
+    exportButtons.forEach(btn => {
+        btn.style.display = isAuthenticated ? 'inline-block' : 'none';
+    });
+
+    if (resetBtn) {
+        resetBtn.style.display = isAuthenticated ? 'inline-block' : 'none';
+    }
+}
+
+function showLoginModal() {
+    document.getElementById('loginModal').classList.add('active');
+    document.getElementById('login_username').value = '';
+    document.getElementById('login_password').value = '';
+    document.getElementById('loginError').style.display = 'none';
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('active');
+}
+
+async function handleLogin(event) {
+    event.preventDefault();
+
+    const username = document.getElementById('login_username').value;
+    const password = document.getElementById('login_password').value;
+    const errorDiv = document.getElementById('loginError');
+
+    try {
+        const response = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            localStorage.setItem('adminAuthenticated', 'true');
+            closeLoginModal();
+            updateUIBasedOnAuth();
+        } else {
+            errorDiv.textContent = result.message || 'Identifiants invalides';
+            errorDiv.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        errorDiv.textContent = 'Erreur de connexion au serveur';
+        errorDiv.style.display = 'block';
+    }
+}
+
+function handleLogout() {
+    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+        localStorage.removeItem('adminAuthenticated');
+        updateUIBasedOnAuth();
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Set up login button
+    document.getElementById('loginBtn').addEventListener('click', showLoginModal);
+
+    // Set up logout button
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+    // Set up login form
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+    // Close login modal when clicking outside
+    document.getElementById('loginModal').addEventListener('click', (e) => {
+        if (e.target.id === 'loginModal') {
+            closeLoginModal();
+        }
+    });
+
+    // Update UI based on auth status
+    updateUIBasedOnAuth();
+
+    // Watch for table changes and reapply auth restrictions
+    const tbody = document.querySelector('#rosterTable tbody');
+    if (tbody) {
+        const observer = new MutationObserver(() => {
+            updateUIBasedOnAuth();
+        });
+        observer.observe(tbody, { childList: true, subtree: true });
+    }
+});

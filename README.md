@@ -22,16 +22,21 @@ Application web pour gérer le roster d'une guilde World of Warcraft, avec formu
 
 ### 📝 Formulaire d'inscription
 - Inscription des personnages principaux avec :
-  - Nom, classe, spécialisation
-  - Rôle (Tank, Healer, DPS)
+  - Nom, classe
+  - **Rôle principal et secondaire** (Tank, Heal, DPS Distant, DPS Cac)
+  - Sélection intelligente des rôles selon la classe choisie
   - Style de jeu (Progress, Social)
-  - Spécialisation secondaire
   - Commentaires
 - **Choix 2** : Possibilité d'ajouter un personnage secondaire complet
 - Validation dynamique des champs selon la classe choisie
 - Interface thématique WoW avec design immersif
+- Redirection automatique vers le panel admin après soumission
 
 ### 🛡️ Panneau d'administration
+- **Authentification** :
+  - Système de login sécurisé
+  - Masquage automatique des actions admin si non connecté
+  - Session persistante (localStorage)
 - **Visualisation des données** :
   - Tableaux triables et filtrables
   - Graphiques interactifs (répartition par rôle, classe, style de jeu)
@@ -39,18 +44,21 @@ Application web pour gérer le roster d'une guilde World of Warcraft, avec formu
 - **Gestion des entrées** :
   - ✏️ Édition en ligne avec modal
   - Modification du personnage principal ET du choix 2
-  - 🗑️ Suppression d'entrées (protégée par mot de passe)
-  - Réinitialisation complète de la base (protégée par mot de passe)
+  - Sélection intelligente des classes et rôles dans le modal d'édition
+  - 🗑️ Suppression d'entrées (nécessite authentification)
+  - Réinitialisation complète de la base (nécessite authentification)
 - **Affichage du Choix 2** :
   - Flèche dépliable (▶) à gauche du nom principal
   - Vue détaillée du personnage secondaire
 - **Export des données** :
-  - Export PDF
-  - Export Excel
+  - Export PDF (nécessite authentification)
+  - Export Excel (nécessite authentification)
 
 ### 📊 Analytiques
 - Graphiques en temps réel :
-  - Répartition des rôles (Tank/Healer/DPS)
+  - Répartition des rôles (Tank/Heal/DPS Distant/DPS Cac)
+  - Compte les rôles principaux ET secondaires
+  - Inclut les personnages principaux ET les choix 2
   - Préférences de style de jeu (Progress/Social)
   - Distribution des classes avec couleurs officielles WoW
 
@@ -102,7 +110,10 @@ TURSO_AUTH_TOKEN=your-auth-token
 
 4. **Initialiser la base de données**
 
-La base sera automatiquement créée au premier lancement.
+La base sera automatiquement créée au premier lancement, incluant :
+- Table `roster` pour les personnages
+- Table `admin_users` pour l'authentification
+- Utilisateur admin par défaut créé automatiquement
 
 5. **Démarrer le serveur**
 ```bash
@@ -121,29 +132,31 @@ L'application sera accessible sur `http://localhost:3000`
 | `TURSO_AUTH_TOKEN` | Token d'authentification Turso | ✅ |
 | `PORT` | Port du serveur (défaut: 3000) | ❌ |
 
-### Mot de passe admin
+### Authentification admin
 
-Le mot de passe par défaut pour les actions destructives est : **`Azeroth2024`**
+Un utilisateur admin est créé automatiquement au premier démarrage.
+Les identifiants par défaut sont stockés dans la base de données.
 
-⚠️ **Important** : Changez ce mot de passe dans le code avant de déployer en production :
-- Fichier : `public/admin-secret.html`
-- Rechercher : `"Azeroth2024"`
+⚠️ **Important** : Pour des raisons de sécurité, changez les identifiants admin après le premier déploiement en modifiant directement la base de données.
 
 ## 🚀 Utilisation
 
 ### Accès utilisateur
 1. Ouvrir `http://localhost:3000`
 2. Remplir le formulaire d'inscription
-3. (Optionnel) Ajouter un "Choix 2" pour un personnage secondaire
-4. Soumettre
+3. Sélectionner la classe (les rôles disponibles s'affichent automatiquement)
+4. Choisir un rôle principal et optionnellement un rôle secondaire
+5. (Optionnel) Ajouter un "Choix 2" pour un personnage secondaire
+6. Soumettre - redirection automatique vers le panel admin
 
 ### Accès administrateur
 1. Ouvrir `http://localhost:3000/admin-secret.html`
-2. Visualiser les statistiques et le roster complet
-3. Utiliser les filtres pour affiner la recherche
-4. Cliquer sur ▶ pour voir les détails du choix 2
-5. Cliquer sur ✏️ pour éditer une entrée
-6. Exporter les données en PDF ou Excel
+2. Cliquer sur "Login" et s'authentifier
+3. Visualiser les statistiques et le roster complet
+4. Utiliser les filtres pour affiner la recherche
+5. Cliquer sur ▶ pour voir les détails du choix 2
+6. Cliquer sur ✏️ pour éditer une entrée
+7. Exporter les données en PDF ou Excel (nécessite authentification)
 
 ## 📁 Structure du projet
 
@@ -152,6 +165,8 @@ wow-roster/
 ├── public/
 │   ├── index.html           # Formulaire d'inscription
 │   ├── admin-secret.html    # Panneau admin
+│   ├── admin-auth.js        # Logique d'authentification
+│   ├── admin-edit-helpers.js # Helpers pour modal d'édition
 │   ├── style.css            # Styles globaux
 │   ├── script.js            # Logique formulaire
 │   └── background.jpg       # Image de fond
@@ -176,12 +191,11 @@ Récupère toutes les entrées du roster.
     "id": 1,
     "name": "Thrall",
     "characterClass": "Chaman",
-    "spec": "Amélioration",
-    "secondarySpec": "Restauration",
-    "role": "DPS",
+    "primaryRole": "DPS Cac",
+    "secondaryRole": "Heal",
     "playstyle": "Progress",
     "comment": "Main tank disponible si besoin",
-    "rerolls": "[{\"name\":\"Jaina\",\"characterClass\":\"Mage\",\"spec\":\"Givre\",\"role\":\"DPS\"}]",
+    "rerolls": "[{\"name\":\"Jaina\",\"characterClass\":\"Mage\",\"primaryRole\":\"DPS Distant\",\"secondaryRole\":\"\"}]",
     "timestamp": "2024-12-02T18:30:00.000Z"
   }
 ]
@@ -195,17 +209,16 @@ Ajoute une nouvelle entrée.
 {
   "name": "Thrall",
   "characterClass": "Chaman",
-  "spec": "Amélioration",
-  "secondarySpec": "Restauration",
-  "role": "DPS",
+  "primaryRole": "DPS Cac",
+  "secondaryRole": "Heal",
   "playstyle": "Progress",
   "comment": "Commentaire optionnel",
   "rerolls": [
     {
       "name": "Jaina",
       "characterClass": "Mage",
-      "spec": "Givre",
-      "role": "DPS"
+      "primaryRole": "DPS Distant",
+      "secondaryRole": ""
     }
   ]
 }
@@ -222,21 +235,43 @@ Supprime une entrée spécifique.
 #### `DELETE /api/roster`
 Réinitialise toute la base de données.
 
+#### `POST /api/admin/login`
+Authentifie un utilisateur admin.
+
+**Body** :
+```json
+{
+  "username": "Admin",
+  "password": "Admin"
+}
+```
+
+**Réponse** :
+```json
+{
+  "success": true,
+  "message": "Login successful"
+}
+```
+
 ## 🔒 Sécurité
 
 ### Mesures implémentées
-- ✅ Mot de passe requis pour les suppressions
+- ✅ Authentification admin avec login/logout
+- ✅ Masquage automatique des actions destructives si non authentifié
 - ✅ Validation des données côté serveur
 - ✅ Protection contre les injections SQL (requêtes préparées)
 - ✅ Variables d'environnement pour les secrets
 
 ### Recommandations pour la production
-- [ ] Implémenter une vraie authentification (JWT, OAuth)
+- [ ] Implémenter un hashage des mots de passe (bcrypt)
+- [ ] Remplacer localStorage par des sessions serveur ou JWT
 - [ ] Ajouter HTTPS
 - [ ] Limiter le taux de requêtes (rate limiting)
-- [ ] Changer le mot de passe admin par défaut
+- [ ] Changer les identifiants admin par défaut
 - [ ] Ajouter des logs d'audit
 - [ ] Implémenter CORS si nécessaire
+- [ ] Ajouter une authentification à deux facteurs
 
 ## 🌐 Déploiement
 
