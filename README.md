@@ -113,7 +113,8 @@ TURSO_AUTH_TOKEN=your-auth-token
 La base sera automatiquement créée au premier lancement, incluant :
 - Table `roster` pour les personnages
 - Table `admin_users` pour l'authentification
-- Utilisateur admin par défaut créé automatiquement
+
+**Important** : Vous devez créer manuellement un utilisateur admin dans la base de données après le premier lancement (voir section [Authentification admin](#authentification-admin))
 
 5. **Démarrer le serveur**
 ```bash
@@ -134,10 +135,14 @@ L'application sera accessible sur `http://localhost:3000`
 
 ### Authentification admin
 
-Un utilisateur admin est créé automatiquement au premier démarrage.
-Les identifiants par défaut sont stockés dans la base de données.
+**Aucun utilisateur admin n'est créé automatiquement.** Vous devez créer manuellement un utilisateur admin dans la base de données.
 
-⚠️ **Important** : Pour des raisons de sécurité, changez les identifiants admin après le premier déploiement en modifiant directement la base de données.
+**Création manuelle d'un admin** :
+```sql
+INSERT INTO admin_users (username, password) VALUES ('votre_username', 'votre_password');
+```
+
+⚠️ **Important** : Pour des raisons de sécurité en production, il est fortement recommandé d'implémenter un hashage des mots de passe (bcrypt) avant de stocker les credentials.
 
 ## 🚀 Utilisation
 
@@ -241,8 +246,8 @@ Authentifie un utilisateur admin.
 **Body** :
 ```json
 {
-  "username": "Admin",
-  "password": "Admin"
+  "username": "your_admin_username",
+  "password": "your_admin_password"
 }
 ```
 

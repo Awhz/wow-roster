@@ -39,15 +39,9 @@ const db = createClient({
       )
     `);
 
-    // Insert default admin user if table is empty
-    const adminCheck = await db.execute('SELECT COUNT(*) as count FROM admin_users');
-    if (adminCheck.rows[0].count === 0) {
-      await db.execute({
-        sql: 'INSERT INTO admin_users (username, password) VALUES (?, ?)',
-        args: ['Admin', 'Admin']
-      });
-      console.log('Default admin user created (Admin/Admin)');
-    }
+    // Admin users must be created manually in the database
+    // Example SQL: INSERT INTO admin_users (username, password) VALUES ('your_username', 'your_password');
+    console.log('Admin users table ready. Create admin users manually in the database.');
 
     // Migration: Add columns if they don't exist
     const columnsToAdd = [
